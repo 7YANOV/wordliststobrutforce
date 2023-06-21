@@ -1,18 +1,40 @@
-
+import argparse
+import platform
+import os
 
 file1 = open("test_pass1.txt", "r")
 file2 = open("test_pass2.txt", "r")
-
+file3 = open("test_pass3.txt", "r")
 sortedFile1 = open("sorted_test_pass1.txt", "w+")
 sortedFile2 = open("sorted_test_pass2.txt", "w+")
+sortedFile3 = open("sorted_test_pass3.txt", "w+")
+
 
 
 def sortFile(file, sortedFile):
-    lines = file.readlines()
-    lines.sort()
-    for line in lines:
-        sortedFile.write(line)
-    sortedFile.close()
+    if platform.system() == 'Windows':
+        lines = file.readlines()
+        lines.sort()
+        for line in lines:
+            sortedFile.write(line)
+        sortedFile.close()
+    elif platform.system() == 'Linux':
+        os.system(f"sort {file} > {sortedFile}")
+
+
+def sort_files_from_list(file_list):
+    with open(file_list, 'r') as f:
+        files_to_sort = f.readlines()
+
+    for file in files_to_sort:
+        if file.strip() == '':
+            continue
+        file = file.strip()
+        sorted_file = open(f"sorted_{file}", "w+")
+        sortFile(open(file, "r"), sorted_file)
+
+
+
 
 
 def mergeSortedLists(sortedPass1, sortedPass2):
@@ -61,7 +83,12 @@ def mergeSortedLists(sortedPass1, sortedPass2):
     resultFile.close()
 
 
-sortFile(file1, sortedFile1)
-sortFile(file2, sortedFile2)
+sort_files_from_list("wordlists.txt")
 
-mergeSortedLists(open("sorted_test_pass1.txt", "r"), open("sorted_test_pass2.txt", "r"))
+
+#sortFile(file1, sortedFile1)
+#sortFile(file2, sortedFile2)
+#sortFile(file3, sortedFile3)
+
+#mergeSortedLists(open("sorted_test_pass1.txt", "r"), open("sorted_test_pass2.txt", "r"))
+
