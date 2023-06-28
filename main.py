@@ -2,14 +2,6 @@ import argparse
 import platform
 import os
 
-file1 = open("test_pass1.txt", "r")
-file2 = open("test_pass2.txt", "r")
-file3 = open("test_pass3.txt", "r")
-sortedFile1 = open("sorted_test_pass1.txt", "w+")
-sortedFile2 = open("sorted_test_pass2.txt", "w+")
-sortedFile3 = open("sorted_test_pass3.txt", "w+")
-
-
 
 def sortFile(file, sortedFile):
     if platform.system() == 'Windows':
@@ -24,21 +16,20 @@ def sortFile(file, sortedFile):
 
 def sort_files_from_list(file_list):
     with open(file_list, 'r') as f:
-        files_to_sort = f.readlines()
-
+        files_to_sort = f.read().splitlines()
+    sorted_file_list = []
     for file in files_to_sort:
         if file.strip() == '':
             continue
         file = file.strip()
         sorted_file = open(f"sorted_{file}", "w+")
+        sorted_file_list.append(f"sorted_{file}")
         sortFile(open(file, "r"), sorted_file)
-
-
-
+    return sorted_file_list
 
 
 def mergeSortedLists(sortedPass1, sortedPass2):
-    resultFile = open("result.txt", "w+")
+    resultFile = open("temp_wordlist.txt", "w+")
     currentLine1 = sortedPass1.readline()
     currentLine2 = sortedPass2.readline()
 
@@ -83,12 +74,22 @@ def mergeSortedLists(sortedPass1, sortedPass2):
     resultFile.close()
 
 
-sort_files_from_list("wordlists.txt")
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Sort files from a list.")
+    parser.add_argument("list_of_files", metavar="FILE_LIST", help="Path to the file list")
+    args = parser.parse_args()
+    sorted_file_list = sort_files_from_list(args.list_of_files)
+    if sorted_file_list:
+        mergeSortedLists(open(sorted_file_list[0], "r"), open(sorted_file_list[1], "r"))
+        os.rename("temp_wordlist.txt", "result_wordlists.txt")
+        for i in range(2, len(sorted_file_list)):
+            mergeSortedLists(open("result_wordlists.txt", "r"), open(sorted_file_list[i], "r"))
+            os.remove("result_wordlists.txt")
+            os.rename("temp_wordlist.txt", "result_wordlists.txt")
+        print("Done!")
+    for file in sorted_file_list:
+        print(f"Removing {file}")
+        os.remove(file)
 
-#sortFile(file1, sortedFile1)
-#sortFile(file2, sortedFile2)
-#sortFile(file3, sortedFile3)
-
-#mergeSortedLists(open("sorted_test_pass1.txt", "r"), open("sorted_test_pass2.txt", "r"))
 
