@@ -85,10 +85,12 @@ if __name__ == "__main__":
     sorted_file_list = sort_files_from_list(args.list_of_files)
     if sorted_file_list:
         mergeSortedLists(open(sorted_file_list[0], "r"), open(sorted_file_list[1], "r"))
+        print(f"Merging {sorted_file_list[0]} and {sorted_file_list[1]}...." )
         os.rename("temp_wordlist.txt", "result_wordlists.txt")
         for i in range(2, len(sorted_file_list)):
             mergeSortedLists(open("result_wordlists.txt", "r"), open(sorted_file_list[i], "r"))
             os.remove("result_wordlists.txt")
+            print("Merging result_wordlists.txt and " + sorted_file_list[i] + "....")
             os.rename("temp_wordlist.txt", "result_wordlists.txt")
         print("Done!")
     for file in sorted_file_list:
