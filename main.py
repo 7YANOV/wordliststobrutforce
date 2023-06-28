@@ -15,22 +15,27 @@ def sortFile(file, sortedFile):
 
 
 def sort_files_from_list(file_list):
-    with open(file_list, 'r') as f:
+    with open(file_list, 'r', encoding='utf-8') as f:
         files_to_sort = f.read().splitlines()
     sorted_file_list = []
     for file in files_to_sort:
         if file.strip() == '':
             continue
         file = file.strip()
-        print(f"Sorting {file}...")
-        sorted_file = open(f"sorted_{file}", "w+")
+
         sorted_file_list.append(f"sorted_{file}")
-        sortFile(open(file, "r"), sorted_file)
+
+        if os.path.exists(f"sorted_{file}"):
+            print(f"sorted_{file} already sorted")
+            continue
+        print(f"Sorting {file}...")
+        sorted_file = open(f"sorted_{file}", "w+", encoding='utf-8')
+        sortFile(open(file, "r", encoding='utf-8'), sorted_file)
     return sorted_file_list
 
 
 def mergeSortedLists(sortedPass1, sortedPass2):
-    resultFile = open("temp_wordlist.txt", "w+")
+    resultFile = open("temp_wordlist.txt", "w+", encoding='utf-8')
     currentLine1 = sortedPass1.readline()
     currentLine2 = sortedPass2.readline()
 
@@ -82,19 +87,25 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sort files from a list.")
     parser.add_argument("list_of_files", metavar="FILE_LIST", help="Path to the file list")
     args = parser.parse_args()
+
+
     sorted_file_list = sort_files_from_list(args.list_of_files)
-    if sorted_file_list:
-        mergeSortedLists(open(sorted_file_list[0], "r"), open(sorted_file_list[1], "r"))
-        print(f"Merging {sorted_file_list[0]} and {sorted_file_list[1]}...." )
+
+
+    print(f"Merging {sorted_file_list[0]} and {sorted_file_list[1]}....")
+    mergeSortedLists(open(sorted_file_list[0], "r", encoding='utf-8'), open(sorted_file_list[1], "r", encoding='utf-8'))
+    os.rename("temp_wordlist.txt", "result_wordlists.txt")
+
+    for i in range(2, len(sorted_file_list)):
+        print("Merging result_wordlists.txt and " + sorted_file_list[i] + "....")
+        mergeSortedLists(open("result_wordlists.txt", "r", encoding='utf-8'), open(sorted_file_list[i], "r", encoding='utf-8'))
+        os.remove("result_wordlists.txt")
         os.rename("temp_wordlist.txt", "result_wordlists.txt")
-        for i in range(2, len(sorted_file_list)):
-            mergeSortedLists(open("result_wordlists.txt", "r"), open(sorted_file_list[i], "r"))
-            os.remove("result_wordlists.txt")
-            print("Merging result_wordlists.txt and " + sorted_file_list[i] + "....")
-            os.rename("temp_wordlist.txt", "result_wordlists.txt")
-        print("Done!")
+    print("Done!")
+
     for file in sorted_file_list:
         print(f"Removing {file}")
         os.remove(file)
 
 
+#start 14:54
