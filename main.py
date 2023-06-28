@@ -22,6 +22,7 @@ def sort_files_from_list(file_list):
         if file.strip() == '':
             continue
         file = file.strip()
+        print(f"Sorting {file}...")
         sorted_file = open(f"sorted_{file}", "w+")
         sorted_file_list.append(f"sorted_{file}")
         sortFile(open(file, "r"), sorted_file)
@@ -76,6 +77,8 @@ def mergeSortedLists(sortedPass1, sortedPass2):
 
 
 if __name__ == "__main__":
+    if os.path.exists("result_wordlists.txt"):
+        os.remove("result_wordlists.txt")
     parser = argparse.ArgumentParser(description="Sort files from a list.")
     parser.add_argument("list_of_files", metavar="FILE_LIST", help="Path to the file list")
     args = parser.parse_args()
